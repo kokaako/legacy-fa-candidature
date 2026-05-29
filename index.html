@@ -615,6 +615,8 @@
 
       <section class="panel" id="formulaire">
         <form id="staff-form">
+          <input type="text" name="website" tabindex="-1" autocomplete="off" style="display: none;">
+
           <div class="form-section" id="infos">
             <h2 class="section-title">Informations</h2>
             <div class="fields">
@@ -736,7 +738,7 @@
           </div>
 
           <button class="submit" type="submit">Envoyer ma candidature</button>
-          <p class="message" id="message">Ta candidature est pr&ecirc;te. Il reste &agrave; connecter l'envoi vers Discord.</p>
+          <p class="message" id="message">Envoi en cours...</p>
         </form>
       </section>
     </main>
@@ -749,12 +751,78 @@
   <script>
     const form = document.querySelector("#staff-form");
     const message = document.querySelector("#message");
+    const submitButton = form.querySelector(".submit");
 
     form.addEventListener("submit", (event) => {
       event.preventDefault();
-      message.style.display = "block";
-      message.scrollIntoView({ behavior: "smooth", block: "center" });
+      submitCandidature();
     });
+
+    function getValue(name) {
+      return new FormData(form).get(name) || "";
+    }
+
+    function showMessage(text, type) {
+      message.textContent = text;
+      message.style.display = "block";
+      message.style.borderColor = type === "error" ? "rgba(248, 113, 113, 0.55)" : "rgba(56, 189, 248, 0.45)";
+      message.style.background = type === "error" ? "rgba(127, 29, 29, 0.28)" : "rgba(14, 116, 144, 0.2)";
+      message.style.color = type === "error" ? "#fee2e2" : "#dff6ff";
+      message.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    async function submitCandidature() {
+      if (!form.reportValidity()) {
+        return;
+      }
+
+      const data = {
+        website: getValue("website"),
+        discordId: getValue("discord"),
+        discordPseudo: getValue("pseudo-discord"),
+        gamePseudo: getValue("pseudo-jeu"),
+        poste: getValue("poste"),
+        age: getValue("age"),
+        naissance: getValue("naissance"),
+        experience: getValue("experience"),
+        motivation: getValue("motivation"),
+        disponibilites: {
+          lundi: getValue("lundi"),
+          mardi: getValue("mardi"),
+          mercredi: getValue("mercredi"),
+          jeudi: getValue("jeudi"),
+          vendredi: getValue("vendredi"),
+          samedi: getValue("samedi"),
+          dimanche: getValue("dimanche")
+        }
+      };
+
+      submitButton.disabled = true;
+      submitButton.textContent = "Envoi en cours...";
+      showMessage("Envoi de ta candidature...", "info");
+
+      try {
+        const response = await fetch("/api/candidature", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+          throw new Error("Erreur d'envoi");
+        }
+
+        form.reset();
+        showMessage("Ta candidature a bien ete envoyee dans le salon Discord.", "success");
+      } catch (error) {
+        showMessage("L'envoi Discord n'est pas encore actif. Il faut publier le site avec Vercel et ajouter le webhook en variable secrete.", "error");
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = "Envoyer ma candidature";
+      }
+    }
   </script>
 </body>
 </html>
