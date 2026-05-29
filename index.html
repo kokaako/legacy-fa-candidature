@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Candidature Staff - Legacy FA</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #030817;
+      --panel: rgba(8, 16, 38, 0.9);
+      --panel-soft: rgba(10, 22, 50, 0.86);
+      --line: rgba(59, 130, 246, 0.36);
+      --line-strong: rgba(56, 189, 248, 0.62);
+      --text: #eaf2ff;
+      --muted: #9fb3d9;
+      --blue: #2563eb;
+      --blue-dark: #0f3ea8;
+      --cyan: #38bdf8;
+      --white: #ffffff;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: linear-gradient(135deg, #020617, #071638, #020617);
+      background-size: 180% 180%;
+      animation: nightMove 16s ease-in-out infinite;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: -22%;
+      pointer-events: none;
+      background:
+        linear-gradient(115deg, transparent 12%, rgba(37, 99, 235, 0.16) 32%, transparent 52%),
+        linear-gradient(70deg, transparent 20%, rgba(56, 189, 248, 0.1) 48%, transparent 72%),
+        linear-gradient(160deg, transparent 30%, rgba(30, 64, 175, 0.18) 58%, transparent 82%);
+      filter: blur(18px);
+      opacity: 0.78;
+      z-index: 0;
+      animation: glowFloat 18s ease-in-out infinite alternate;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .discord-link {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      z-index: 20;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 38px;
+      padding: 0 14px;
+      border: 1px solid rgba(96, 165, 250, 0.46);
+      border-radius: 8px;
+      background: rgba(8, 16, 38, 0.82);
+      box-shadow: 0 12px 34px rgba(37, 99, 235, 0.24);
+      color: #dbeafe;
+      text-decoration: none;
+      font-size: 0.86rem;
+      font-weight: 900;
+      backdrop-filter: blur(8px);
+    }
+
+    .discord-link:hover {
+      border-color: var(--cyan);
+      color: var(--white);
+    }
+
+    .falling-stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .falling-stars span {
+      --x: 50%;
+      --delay: 0s;
+      --speed: 8s;
+      --size: 4px;
+      --drift: 3vw;
+      position: absolute;
+      top: -12vh;
+      left: var(--x);
+      width: var(--size);
+      height: var(--size);
+      border-radius: 999px;
+      background: #38bdf8;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.95), 0 0 28px rgba(37, 99, 235, 0.55);
+      opacity: 0;
+      animation: fallingStar var(--speed) linear infinite;
+      animation-delay: var(--delay);
+    }
+
+    .falling-stars span::after {
+      content: "";
+      position: absolute;
+      top: -34px;
+      left: 50%;
+      width: 2px;
+      height: 36px;
+      border-radius: 999px;
+      background: linear-gradient(rgba(56, 189, 248, 0), rgba(56, 189, 248, 0.75));
+      transform: translateX(-50%);
+    }
+
+    .falling-stars span:nth-child(1) {
+      --x: 14%;
+      --delay: -1s;
+      --speed: 7s;
+      --size: 4px;
+      --drift: 5vw;
+    }
+
+    .falling-stars span:nth-child(2) {
+      --x: 30%;
+      --delay: -4.2s;
+      --speed: 9s;
+      --size: 3px;
+      --drift: -3vw;
+    }
+
+    .falling-stars span:nth-child(3) {
+      --x: 47%;
+      --delay: -2.5s;
+      --speed: 8.5s;
+      --size: 5px;
+      --drift: 4vw;
+    }
+
+    .falling-stars span:nth-child(4) {
+      --x: 63%;
+      --delay: -6s;
+      --speed: 10s;
+      --size: 3px;
+      --drift: -5vw;
+    }
+
+    .falling-stars span:nth-child(5) {
+      --x: 78%;
+      --delay: -3.7s;
+      --speed: 8s;
+      --size: 4px;
+      --drift: 3vw;
+    }
+
+    .falling-stars span:nth-child(6) {
+      --x: 91%;
+      --delay: -7.4s;
+      --speed: 11s;
+      --size: 3px;
+      --drift: -4vw;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      width: min(980px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 48px 0 72px;
+    }
+
+    header {
+      min-height: 340px;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      text-align: center;
+      padding: 24px 0 38px;
+    }
+
+    .logo {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      z-index: 20;
+      width: clamp(42px, 6vw, 58px);
+      aspect-ratio: 1;
+      object-fit: cover;
+      border: 1px solid rgba(96, 165, 250, 0.42);
+      border-radius: 12px;
+      box-shadow: 0 12px 34px rgba(37, 99, 235, 0.36);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      padding: 0 22px;
+      border: 1px solid rgba(96, 165, 250, 0.3);
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.22);
+      color: #bfdbfe;
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin-top: 24px;
+      font-size: clamp(2rem, 6vw, 4.2rem);
+      line-height: 1.08;
+      font-style: italic;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #eff6ff;
+      text-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+    }
+
+    .subtitle {
+      width: min(720px, 100%);
+      margin-top: 28px;
+      color: #bdd3f7;
+      font-size: clamp(1rem, 2vw, 1.14rem);
+      font-weight: 600;
+    }
+
+    .brand {
+      color: var(--cyan);
+      font-weight: 900;
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .nav a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 0 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(8, 16, 38, 0.72);
+      text-decoration: none;
+      color: #dbeafe;
+      font-size: 0.9rem;
+      font-weight: 800;
+    }
+
+    .nav a:hover {
+      border-color: var(--line-strong);
+      color: var(--white);
+    }
+
+    .panel {
+      margin-bottom: 34px;
+      padding: clamp(22px, 4vw, 34px);
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--blue);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: 0 24px 90px rgba(0, 0, 0, 0.32);
+      backdrop-filter: blur(10px);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      color: #bfdbfe;
+      font-size: 0.92rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .section-title::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 22px rgba(56, 189, 248, 0.9);
+    }
+
+    .conditions {
+      display: grid;
+      gap: 12px;
+      list-style: none;
+      color: #c7d7f4;
+      font-weight: 600;
+    }
+
+    .conditions li {
+      position: relative;
+      padding-left: 22px;
+    }
+
+    .conditions li::before {
+      content: "";
+      position: absolute;
+      top: 11px;
+      left: 0;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+
+    strong {
+      color: var(--white);
+    }
+
+    form {
+      display: grid;
+      gap: 34px;
+    }
+
+    .form-section {
+      display: grid;
+      gap: 18px;
+    }
+
+    .fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px 24px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label,
+    .field-title {
+      display: block;
+      margin-bottom: 9px;
+      color: #aecdff;
+      font-size: 0.78rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .hint {
+      color: #7790bd;
+      font-size: 0.78rem;
+      font-style: italic;
+      font-weight: 500;
+      text-transform: none;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid rgba(59, 130, 246, 0.32);
+      border-radius: 8px;
+      padding: 15px 16px;
+      background: rgba(10, 22, 50, 0.94);
+      color: var(--white);
+      font: inherit;
+      font-weight: 650;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.16);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #7186ad;
+    }
+
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    .availability {
+      display: grid;
+      gap: 10px;
+    }
+
+    .day-row {
+      display: grid;
+      grid-template-columns: 74px repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      align-items: center;
+    }
+
+    .day {
+      color: #9fb3d9;
+      font-size: 0.86rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .slot input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .slot span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      border: 1px solid rgba(59, 130, 246, 0.32);
+      border-radius: 7px;
+      background: rgba(10, 22, 50, 0.96);
+      color: #eff6ff;
+      font-weight: 800;
+      cursor: pointer;
+      user-select: none;
+      transition: 0.18s ease;
+    }
+
+    .slot input:checked + span {
+      border-color: rgba(96, 165, 250, 0.9);
+      background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+      color: var(--white);
+      box-shadow: 0 14px 30px rgba(37, 99, 235, 0.28);
+    }
+
+    .slot span:hover {
+      border-color: var(--cyan);
+      transform: translateY(-1px);
+    }
+
+    .submit {
+      width: 100%;
+      min-height: 58px;
+      border: 0;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #3b82f6, #0f3ea8);
+      color: var(--white);
+      font: inherit;
+      font-size: 1rem;
+      font-style: italic;
+      font-weight: 900;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 20px 60px rgba(37, 99, 235, 0.35);
+    }
+
+    .submit:hover {
+      background: linear-gradient(135deg, #38bdf8, #1d4ed8);
+    }
+
+    .message {
+      display: none;
+      padding: 14px 16px;
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      border-radius: 8px;
+      background: rgba(14, 116, 144, 0.2);
+      color: #dff6ff;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    footer {
+      padding-top: 26px;
+      color: #8ea6d0;
+      text-align: center;
+      font-size: 0.92rem;
+      font-weight: 600;
+    }
+
+    @keyframes nightMove {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    @keyframes glowFloat {
+      from {
+        transform: translate3d(-2%, -1%, 0) scale(1);
+      }
+
+      to {
+        transform: translate3d(3%, 2%, 0) scale(1.06);
+      }
+    }
+
+    @keyframes fallingStar {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, -8vh, 0);
+      }
+
+      10% {
+        opacity: 0.82;
+      }
+
+      82% {
+        opacity: 0.7;
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate3d(var(--drift), 118vh, 0);
+      }
+    }
+
+    @media (max-width: 760px) {
+      .page {
+        width: min(100% - 22px, 980px);
+        padding-top: 24px;
+      }
+
+      header {
+        min-height: 300px;
+      }
+
+      .logo {
+        top: 12px;
+        left: 12px;
+        width: 40px;
+        border-radius: 10px;
+      }
+
+      .discord-link {
+        top: 12px;
+        right: 12px;
+        min-height: 34px;
+        padding: 0 10px;
+        font-size: 0.78rem;
+      }
+
+      .fields,
+      .day-row {
+        grid-template-columns: 1fr;
+      }
+
+      .day {
+        margin-top: 8px;
+      }
+
+      .slot span {
+        min-height: 46px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="discord-link" href="https://discord.gg/S6Rb9Ebf" target="_blank" rel="noopener" aria-label="Discord Legacy FA">Discord Legacy FA</a>
+
+  <div class="falling-stars" aria-hidden="true">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <div class="page">
+    <header>
+      <img class="logo" src="logo_final.png" alt="Logo Legacy FA">
+      <div class="tag">Rejoins l'&eacute;quipe</div>
+      <h1>Candidature Staff</h1>
+      <p class="subtitle">
+        Tu veux faire partie de l'aventure <span class="brand">Legacy FA</span> et aider notre communaut&eacute; &agrave; grandir ?
+        Remplis ce formulaire avec s&eacute;rieux, le staff &eacute;tudie chaque candidature.
+      </p>
+    </header>
+
+    <nav class="nav" aria-label="Navigation">
+      <a href="#conditions">Conditions</a>
+      <a href="#infos">Informations</a>
+      <a href="#dispos">Disponibilit&eacute;s</a>
+      <a href="#motivation">Motivation</a>
+    </nav>
+
+    <main>
+      <section class="panel" id="conditions">
+        <h2 class="section-title">Rappel des conditions</h2>
+        <ul class="conditions">
+          <li>Avoir <strong>16 ans minimum</strong>.</li>
+          <li>Connaitre le <strong>r&egrave;glement</strong> du serveur.</li>
+          <li>Savoir garder son <strong>sang-froid</strong> en toutes circonstances.</li>
+          <li>Ne pas avoir de grosse sanction r&eacute;cente.</li>
+          <li>Avoir un <strong>minimum de disponibilit&eacute;</strong> &agrave; mettre sur le serveur.</li>
+        </ul>
+      </section>
+
+      <section class="panel" id="formulaire">
+        <form id="staff-form">
+          <div class="form-section" id="infos">
+            <h2 class="section-title">Informations</h2>
+            <div class="fields">
+              <div class="field">
+                <label for="discord">Identifiant Discord *</label>
+                <input id="discord" name="discord" type="text" placeholder="Ex : 123456789012345678" required>
+              </div>
+
+              <div class="field">
+                <label for="pseudo-discord">Pseudo Discord *</label>
+                <input id="pseudo-discord" name="pseudo-discord" type="text" placeholder="Ton pseudo Discord" required>
+              </div>
+
+              <div class="field">
+                <label for="pseudo-jeu">Pseudo en jeu *</label>
+                <input id="pseudo-jeu" name="pseudo-jeu" type="text" placeholder="Ton pseudo FiveM" required>
+              </div>
+
+              <div class="field">
+                <label for="poste">Poste souhait&eacute; *</label>
+                <select id="poste" name="poste" required>
+                  <option value="">Choisir un poste</option>
+                  <option>Responsable</option>
+                  <option>Administrateur</option>
+                  <option>Community Manager</option>
+                  <option>Referent Legal</option>
+                  <option>Referent Illegal</option>
+                  <option>Moderateur</option>
+                  <option>Helpeur</option>
+                  <option>Streamer</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="age">&Acirc;ge * <span class="hint">(minimum 16 ans)</span></label>
+                <input id="age" name="age" type="number" min="16" placeholder="18" required>
+              </div>
+
+              <div class="field">
+                <label for="naissance">Date de naissance *</label>
+                <input id="naissance" name="naissance" type="date" required>
+              </div>
+
+              <div class="field full">
+                <label for="experience">Exp&eacute;rience staff</label>
+                <textarea id="experience" name="experience" placeholder="Explique ton exp&eacute;rience en staff, tes anciens serveurs, tes responsabilit&eacute;s..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section" id="dispos">
+            <h2 class="section-title">Disponibilit&eacute;s</h2>
+            <div class="field-title">Cr&eacute;neaux disponibles <span class="hint">(clique sur les cases)</span></div>
+            <div class="availability">
+              <div class="day-row">
+                <div class="day">Lun</div>
+                <label class="slot"><input type="radio" name="lundi" value="Matin"><span>Matin</span></label>
+                <label class="slot"><input type="radio" name="lundi" value="Apr&egrave;s-midi"><span>Apr&egrave;s-midi</span></label>
+                <label class="slot"><input type="radio" name="lundi" value="Soir"><span>Soir</span></label>
+                <label class="slot"><input type="radio" name="lundi" value="Aucune" checked><span>Aucune</span></label>
+              </div>
+
+              <div class="day-row">
+                <div class="day">Mar</div>
+                <label class="slot"><input type="radio" name="mardi" value="Matin"><span>Matin</span></label>
+                <label class="slot"><input type="radio" name="mardi" value="Apr&egrave;s-midi"><span>Apr&egrave;s-midi</span></label>
+                <label class="slot"><input type="radio" name="mardi" value="Soir"><span>Soir</span></label>
+                <label class="slot"><input type="radio" name="mardi" value="Aucune" checked><span>Aucune</span></label>
+              </div>
+
+              <div class="day-row">
+                <div class="day">Mer</div>
+                <label class="slot"><input type="radio" name="mercredi" value="Matin"><span>Matin</span></label>
+                <label class="slot"><input type="radio" name="mercredi" value="Apr&egrave;s-midi"><span>Apr&egrave;s-midi</span></label>
+                <label class="slot"><input type="radio" name="mercredi" value="Soir"><span>Soir</span></label>
+                <label class="slot"><input type="radio" name="mercredi" value="Aucune" checked><span>Aucune</span></label>
+              </div>
+
+              <div class="day-row">
+                <div class="day">Jeu</div>
+                <label class="slot"><input type="radio" name="jeudi" value="Matin"><span>Matin</span></label>
+                <label class="slot"><input type="radio" name="jeudi" value="Apr&egrave;s-midi"><span>Apr&egrave;s-midi</span></label>
+                <label class="slot"><input type="radio" name="jeudi" value="Soir"><span>Soir</span></label>
+                <label class="slot"><input type="radio" name="jeudi" value="Aucune" checked><span>Aucune</span></label>
+              </div>
+
+              <div class="day-row">
+                <div class="day">Ven</div>
+                <label class="slot"><input type="radio" name="vendredi" value="Matin"><span>Matin</span></label>
+                <label class="slot"><input type="radio" name="vendredi" value="Apr&egrave;s-midi"><span>Apr&egrave;s-midi</span></label>
+                <label class="slot"><input type="radio" name="vendredi" value="Soir"><span>Soir</span></label>
+                <label class="slot"><input type="radio" name="vendredi" value="Aucune" checked><span>Aucune</span></label>
+              </div>
+
+              <div class="day-row">
+                <div class="day">Sam</div>
+                <label class="slot"><input type="radio" name="samedi" value="Matin"><span>Matin</span></label>
+                <label class="slot"><input type="radio" name="samedi" value="Apr&egrave;s-midi"><span>Apr&egrave;s-midi</span></label>
+                <label class="slot"><input type="radio" name="samedi" value="Soir"><span>Soir</span></label>
+                <label class="slot"><input type="radio" name="samedi" value="Aucune" checked><span>Aucune</span></label>
+              </div>
+
+              <div class="day-row">
+                <div class="day">Dim</div>
+                <label class="slot"><input type="radio" name="dimanche" value="Matin"><span>Matin</span></label>
+                <label class="slot"><input type="radio" name="dimanche" value="Apr&egrave;s-midi"><span>Apr&egrave;s-midi</span></label>
+                <label class="slot"><input type="radio" name="dimanche" value="Soir"><span>Soir</span></label>
+                <label class="slot"><input type="radio" name="dimanche" value="Aucune" checked><span>Aucune</span></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section" id="motivation">
+            <h2 class="section-title">Motivation</h2>
+            <div class="field">
+              <label for="motivation-text">Pourquoi veux-tu rejoindre le staff ? * <span class="hint">(minimum 50 caract&egrave;res)</span></label>
+              <textarea id="motivation-text" name="motivation" minlength="50" placeholder="Explique-nous tes motivations, ton exp&eacute;rience, ce que tu peux apporter &agrave; Legacy FA..." required></textarea>
+            </div>
+          </div>
+
+          <button class="submit" type="submit">Envoyer ma candidature</button>
+          <p class="message" id="message">Ta candidature est pr&ecirc;te. Il reste &agrave; connecter l'envoi vers Discord.</p>
+        </form>
+      </section>
+    </main>
+
+    <footer>
+      Legacy FA - Recrutement staff
+    </footer>
+  </div>
+
+  <script>
+    const form = document.querySelector("#staff-form");
+    const message = document.querySelector("#message");
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      message.style.display = "block";
+      message.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  </script>
+</body>
+</html>
